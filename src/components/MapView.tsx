@@ -228,34 +228,18 @@ export const MapView: React.FC<MapViewProps> = ({
         </div>
       </div>
 
-      {/* Floating Availability Legend (Top Left) */}
-      <div className="absolute top-4 left-4 z-20 bg-white/95 backdrop-blur-xs rounded-xl shadow-md border border-slate-200/80 px-3 py-2 text-xs text-slate-700 flex items-center gap-3">
-        <div className="flex items-center gap-1.5 font-medium">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
-          <span>&gt; 30 lots</span>
-        </div>
-        <div className="flex items-center gap-1.5 font-medium">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-          <span>10-30</span>
-        </div>
-        <div className="flex items-center gap-1.5 font-medium">
-          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
-          <span>&lt; 10</span>
-        </div>
-      </div>
-
-      {/* Selected Carpark Bottom Preview Sheet */}
-      {selectedCarpark && (
-        <div className="absolute bottom-4 left-4 right-4 max-w-lg mx-auto z-20 animate-in fade-in slide-in-from-bottom-4 duration-200">
-          <div className="bg-white rounded-2xl shadow-2xl border border-slate-200 p-4">
-            <div className="flex items-start justify-between gap-3">
+      {/* Selected Carpark Bottom Preview Sheet - Positioned cleanly above bottom nav */}
+      {selectedCarpark ? (
+        <div className="absolute bottom-16 sm:bottom-18 left-3 right-3 max-w-md mx-auto z-20 animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <div className="bg-white rounded-2xl shadow-xl border border-slate-200/90 p-3.5">
+            <div className="flex items-start justify-between gap-2.5">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                  <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
                     {selectedCarpark.carpark_number}
                   </span>
                   <span
-                    className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                    className={`px-1.5 py-0.2 rounded text-[10px] font-semibold ${
                       selectedCarpark.agency === 'HDB'
                         ? 'bg-blue-50 text-blue-700 border border-blue-200'
                         : selectedCarpark.agency === 'URA'
@@ -266,32 +250,41 @@ export const MapView: React.FC<MapViewProps> = ({
                     {selectedCarpark.agency}
                   </span>
                   {selectedCarpark.distanceMeters !== undefined && (
-                    <span className="text-xs text-slate-500">
-                      {formatDistance(selectedCarpark.distanceMeters)} away
+                    <span className="text-[11px] text-slate-500">
+                      {formatDistance(selectedCarpark.distanceMeters)}
                     </span>
                   )}
                 </div>
 
-                <h3 className="font-bold text-slate-900 text-base leading-tight truncate">
+                <h3 className="font-bold text-slate-900 text-sm leading-snug truncate">
                   {selectedCarpark.name}
                 </h3>
-                <p className="text-xs text-slate-500 truncate mt-0.5">
+                <p className="text-[11px] text-slate-500 truncate mt-0.5">
                   {selectedCarpark.address}
                 </p>
               </div>
 
-              {/* Big Availability Counter */}
-              <div className="text-right shrink-0">
-                <div className="flex items-baseline justify-end gap-1">
-                  <span className="text-2xl font-black text-slate-900">
+              {/* Big Availability Counter & Dismiss */}
+              <div className="flex flex-col items-end shrink-0">
+                <button
+                  type="button"
+                  onClick={() => onSelectCarpark(null)}
+                  className="text-slate-400 hover:text-slate-700 p-0.5 -mt-1 -mr-1 rounded-lg hover:bg-slate-100 transition-colors"
+                  title="Close preview [Esc]"
+                >
+                  <span className="sr-only">Close</span>
+                  <span className="text-base leading-none font-bold">×</span>
+                </button>
+                <div className="flex items-baseline justify-end gap-1 mt-0.5">
+                  <span className="text-xl font-black text-slate-900">
                     {selectedCarpark.lots_available}
                   </span>
-                  <span className="text-xs text-slate-400 font-medium">
+                  <span className="text-[10px] text-slate-400 font-medium">
                     /{selectedCarpark.total_lots}
                   </span>
                 </div>
                 <span
-                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase ${
+                  className={`inline-block px-1.5 py-0.2 rounded-full text-[9px] font-bold tracking-wide uppercase ${
                     selectedCarpark.lots_available > 30
                       ? 'bg-emerald-100 text-emerald-800'
                       : selectedCarpark.lots_available > 10
@@ -300,55 +293,48 @@ export const MapView: React.FC<MapViewProps> = ({
                   }`}
                 >
                   {selectedCarpark.lots_available > 30
-                    ? 'Plenty Available'
+                    ? 'Plenty'
                     : selectedCarpark.lots_available > 10
-                    ? 'Filling Fast'
-                    : 'Few Lots'}
+                    ? 'Filling'
+                    : 'Few'}
                 </span>
               </div>
             </div>
 
-            {/* Quick Features Row */}
-            <div className="flex items-center gap-3 text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100 flex-wrap">
-              <span className="font-medium text-slate-700">
-                Est. Rate: ~${selectedCarpark.rates.per_half_hour_est.toFixed(2)}/30m
-              </span>
-              <span className="text-slate-300">•</span>
-              {selectedCarpark.features.ev_chargers ? (
-                <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                  <Zap className="w-3.5 h-3.5" />
-                  {selectedCarpark.features.ev_chargers} EV Ports
-                </span>
-              ) : null}
-              {selectedCarpark.features.sheltered && (
-                <span className="flex items-center gap-1 text-slate-600">
-                  <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
-                  Sheltered ({selectedCarpark.height_clearance_m}m)
-                </span>
-              )}
-            </div>
-
             {/* Bottom Actions */}
-            <div className="flex items-center gap-2 mt-3 pt-2">
+            <div className="flex items-center gap-2 mt-2.5 pt-2 border-t border-slate-100">
               <button
                 id="preview-details-btn"
                 type="button"
                 onClick={() => onOpenDetails(selectedCarpark)}
-                className="flex-1 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors text-center"
+                className="flex-1 py-1.5 px-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors text-center"
               >
-                View Rates & Breakdown
+                Rates & Details
               </button>
               <button
                 id="preview-navigate-btn"
                 type="button"
                 onClick={() => onNavigate(selectedCarpark)}
-                className="flex-1 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                className="flex-1 py-1.5 px-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
               >
                 <Navigation className="w-3.5 h-3.5" />
                 Navigate
               </button>
             </div>
           </div>
+        </div>
+      ) : (
+        /* Subtle Availability Pill (Bottom Left) when no carpark is selected */
+        <div className="absolute bottom-16 sm:bottom-18 left-3 z-10 bg-white/90 backdrop-blur-xs rounded-full shadow-sm border border-slate-200/80 px-2.5 py-1 text-[10px] text-slate-600 flex items-center gap-2">
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-emerald-500"></span> &gt;30
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-amber-500"></span> 10-30
+          </span>
+          <span className="flex items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-rose-500"></span> &lt;10
+          </span>
         </div>
       )}
     </div>

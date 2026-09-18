@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Header } from './components/Header';
 import { SearchBar } from './components/SearchBar';
 import { MapView } from './components/MapView';
@@ -7,13 +7,11 @@ import { SavedLotsView } from './components/SavedLotsView';
 import { RatesGuideView } from './components/RatesGuideView';
 import { BottomNavigation } from './components/BottomNavigation';
 import { CarparkDetailModal } from './components/CarparkDetailModal';
-import { SystemStatusBar } from './components/SystemStatusBar';
-import { KeyStrip } from './components/KeyStrip';
 import { HelpShortcutsModal } from './components/HelpShortcutsModal';
 import { carparkService } from './services/carparkService';
 import { Carpark, LocationPreset, FilterOptions, NavTab, VehicleType } from './types';
-import { SINGAPORE_DEFAULT_CENTER, POPULAR_LOCATIONS } from './data/singaporeCarparks';
-import { MapPin, Navigation, Compass, AlertCircle, CheckCircle2, X, SlidersHorizontal, Info } from 'lucide-react';
+import { SINGAPORE_DEFAULT_CENTER } from './data/singaporeCarparks';
+import { AlertCircle, X, SlidersHorizontal } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('map');
@@ -41,35 +39,6 @@ export default function App() {
   const [lastUpdated, setLastUpdated] = useState<Date>(carparkService.getLastUpdated());
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  // Principle 8: Aesthetic and Minimalist Design (HUD elements fade when mouse is still)
-  const [isIdle, setIsIdle] = useState(false);
-  const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  const resetIdleTimer = useCallback(() => {
-    setIsIdle(false);
-    if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-    idleTimerRef.current = setTimeout(() => {
-      setIsIdle(true);
-    }, 3500);
-  }, []);
-
-  useEffect(() => {
-    const handleActivity = () => resetIdleTimer();
-    window.addEventListener('mousemove', handleActivity);
-    window.addEventListener('mousedown', handleActivity);
-    window.addEventListener('keydown', handleActivity);
-    window.addEventListener('touchstart', handleActivity);
-    resetIdleTimer();
-
-    return () => {
-      window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('mousedown', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-      window.removeEventListener('touchstart', handleActivity);
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-    };
-  }, [resetIdleTimer]);
 
   // Show temporary toast message
   const showToast = useCallback((msg: string) => {
@@ -497,12 +466,14 @@ export default function App() {
         </div>
       )}
 
-      {/* Top Application Header */}
+      {/* Top Application Header with Segmented Vehicle Toggle & Live Lots */}
       <Header
         activeTab={activeTab}
         totalCarparks={allCarparks.length}
         totalLotsAvailable={totalLotsAvailable}
         lastUpdated={lastUpdated}
+        vehicleType={filters.vehicleType}
+        onChangeVehicle={handleChangeVehicle}
         onRefresh={handleRefreshRealtime}
         isRefreshing={isRefreshing}
         onOpenHelp={() => setHelpModalOpen(true)}
@@ -548,7 +519,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => handleUpdateFilters({ agency: 'all' })}
-                className="hover:text-blue-950"
+                className="hover:text-blue-950 ml-0.5"
               >
                 ×
               </button>
@@ -561,7 +532,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => handleUpdateFilters({ hasEvCharger: false })}
-                className="hover:text-emerald-950"
+                className="hover:text-emerald-950 ml-0.5"
               >
                 ×
               </button>
@@ -574,7 +545,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => handleUpdateFilters({ minLotsAvailable: 0 })}
-                className="hover:text-amber-950"
+                className="hover:text-amber-950 ml-0.5"
               >
                 ×
               </button>
@@ -587,7 +558,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => handleUpdateFilters({ shelteredOnly: false })}
-                className="hover:text-purple-950"
+                className="hover:text-purple-950 ml-0.5"
               >
                 ×
               </button>
@@ -608,8 +579,8 @@ export default function App() {
       <main className="flex-1 relative flex flex-col overflow-hidden">
         {activeTab === 'map' && (
           <div className="relative w-full h-full flex flex-col">
-            {/* Floating Top Search Bar Overlay */}
-            <div className="absolute top-3 left-3 right-3 max-w-xl mx-auto z-30 pointer-events-auto">
+            {/* Sleek, Non-intrusive Floating Top Search Bar */}
+            <div className="absolute top-3 left-3 right-3 max-w-lg mx-auto z-20 pointer-events-auto">
               <SearchBar
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
@@ -617,21 +588,6 @@ export default function App() {
                 onUseCurrentLocation={handleUseCurrentLocation}
                 isLocating={isLocating}
               />
-
-              {/* Quick Area Preset Pills (Principle 7: Efficiency) */}
-              <div className="flex items-center gap-1.5 mt-2 overflow-x-auto no-scrollbar py-0.5">
-                {POPULAR_LOCATIONS.slice(0, 6).map((loc) => (
-                  <button
-                    key={loc.name}
-                    type="button"
-                    onClick={() => handleSelectLocation(loc)}
-                    className="px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[11px] font-semibold text-slate-700 shadow-sm border border-slate-200/80 hover:bg-slate-50 hover:text-blue-600 transition-colors whitespace-nowrap shrink-0"
-                    title={`Jump near ${loc.name}`}
-                  >
-                    {loc.name.split(' ')[0]}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Interactive Leaflet Map */}
@@ -650,7 +606,7 @@ export default function App() {
         )}
 
         {activeTab === 'list' && (
-          <div className="w-full h-full flex flex-col overflow-y-auto pb-28">
+          <div className="w-full h-full flex flex-col overflow-y-auto pb-16">
             {/* Search bar inside list view */}
             <div className="bg-white px-4 pt-3 pb-2 border-b border-slate-100 max-w-5xl mx-auto w-full">
               <SearchBar
@@ -683,7 +639,7 @@ export default function App() {
         )}
 
         {activeTab === 'saved' && (
-          <div className="w-full h-full overflow-y-auto pb-28">
+          <div className="w-full h-full overflow-y-auto pb-16">
             <SavedLotsView
               savedCarparks={savedCarparks}
               onSelectCarpark={(cp) => {
@@ -701,38 +657,11 @@ export default function App() {
         )}
 
         {activeTab === 'info' && (
-          <div className="w-full h-full overflow-y-auto pb-28">
+          <div className="w-full h-full overflow-y-auto pb-16">
             <RatesGuideView />
           </div>
         )}
       </main>
-
-      {/* Principle 6 & 7: Interactive Key & Action Strip */}
-      <KeyStrip
-        activeTab={activeTab}
-        onChangeTab={handleTabChange}
-        vehicleType={filters.vehicleType}
-        onChangeVehicle={handleChangeVehicle}
-        onFocusSearch={handleFocusSearch}
-        onRefresh={handleRefreshRealtime}
-        onOpenHelp={() => setHelpModalOpen(true)}
-        onCycleAgency={handleCycleAgency}
-        isIdle={isIdle}
-        isRefreshing={isRefreshing}
-      />
-
-      {/* Principle 1: Visibility of System Status Bar */}
-      <SystemStatusBar
-        activeTab={activeTab}
-        locationName={searchLocationName}
-        vehicleType={filters.vehicleType}
-        totalCarparks={searchedCarparks.length}
-        totalLotsAvailable={totalLotsAvailable}
-        lastUpdated={lastUpdated}
-        isIdle={isIdle}
-        serverlessReady={true}
-        onOpenHelp={() => setHelpModalOpen(true)}
-      />
 
       {/* Principle 10: Help and Documentation Modal [?] */}
       <HelpShortcutsModal
