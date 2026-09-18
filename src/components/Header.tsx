@@ -9,6 +9,7 @@ interface HeaderProps {
   lastUpdated: Date;
   onRefresh: () => void;
   isRefreshing: boolean;
+  onOpenHelp?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   lastUpdated,
   onRefresh,
   isRefreshing,
+  onOpenHelp,
 }) => {
   return (
     <header className="bg-white border-b border-slate-200/80 px-4 py-3 sticky top-0 z-30 shadow-xs">
@@ -58,10 +60,25 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onRefresh}
             disabled={isRefreshing}
             className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors"
-            title="Refresh availability"
+            title="Refresh availability [U]"
           >
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`} />
           </button>
+
+          {onOpenHelp && (
+            <button
+              id="header-help-btn"
+              type="button"
+              onClick={onOpenHelp}
+              className="p-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition-colors font-bold text-xs flex items-center gap-1"
+              title="Quick Guide & 10 Usability Principles [?]"
+            >
+              <span className="w-4 h-4 rounded-full bg-amber-200 text-amber-900 flex items-center justify-center text-[10px]">
+                ?
+              </span>
+              <span className="hidden sm:inline font-semibold text-[11px]">Guide</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

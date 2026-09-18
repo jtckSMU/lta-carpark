@@ -88,6 +88,62 @@ export const RatesGuideView: React.FC = () => {
         </div>
       </div>
 
+      {/* 10 Core Usability Heuristics Applied Card */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
+            UX
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-900 text-sm">10 Core Usability Principles in ParkFinder</h3>
+            <p className="text-[11px] text-slate-400">Jakob Nielsen's classic heuristics adapted for zero-distraction driving UX</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">1. Visibility of System Status</span>
+            <p className="text-slate-600 mt-0.5">Bottom telemetry bar names the view [1/4], vehicle mode, lots available, and live LTA sync status.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">2. Match Between System & Real World</span>
+            <p className="text-slate-600 mt-0.5">Keys match first letters (M=Map, L=List, S=Saved, R=Rates, C=Cars, K=Bikes). Uses official HDB/URA standards.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">3. User Control & Freedom</span>
+            <p className="text-slate-600 mt-0.5">Esc closes layer-by-layer (Help → Modal → Preview → Search). Backspace returns you to the view you left.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">4. Consistency & Standards</span>
+            <p className="text-slate-600 mt-0.5">Green for high vacancy (&gt;30), Amber for moderate (10-30), Rose for scarce (&lt;10). Number keys 1-4 switch sections.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">5. Error Prevention</span>
+            <p className="text-slate-600 mt-0.5">Hotkeys pause while typing in search box. Singapore bounds validation prevents map drift outside SG.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">6. Recognition Rather Than Recall</span>
+            <p className="text-slate-600 mt-0.5">Floating interactive key strip remains visible with shortcuts on screen. Active filters display visible chips.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">7. Flexibility & Efficiency of Use</span>
+            <p className="text-slate-600 mt-0.5">Every key has a clickable button for touch/mouse users. Quick preset pills jump to Orchard, Marina Bay, CBD instantly.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">8. Aesthetic & Minimalist Design</span>
+            <p className="text-slate-600 mt-0.5">Key strip and telemetry bar fade to 35% opacity when the mouse is still to keep map clear, restoring on motion.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">9. Diagnose & Recover from Errors</span>
+            <p className="text-slate-600 mt-0.5">Pressing an unassigned key explains so and points to [?]. Clear diagnosis banner if GPS is denied.</p>
+          </div>
+          <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+            <span className="font-bold text-slate-800">10. Help & Documentation</span>
+            <p className="text-slate-600 mt-0.5">Pressing [?] or clicking the guide pill opens a full grouped shortcut and regulation reference anytime.</p>
+          </div>
+        </div>
+      </div>
+
       {/* Motorcycle & Heavy Vehicles Guide */}
       <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
         <h3 className="font-bold text-slate-900 text-sm mb-3 flex items-center gap-2">

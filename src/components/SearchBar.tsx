@@ -56,18 +56,22 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           className="w-full bg-transparent text-sm md:text-base text-slate-800 placeholder:text-slate-400 focus:outline-none"
         />
 
-        {searchQuery && (
+        {searchQuery ? (
           <button
             id="clear-search-btn"
             type="button"
             onClick={() => {
               onSearchChange('');
             }}
-            className="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 mr-1 transition-colors"
-            title="Clear search"
+            className="p-1 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 mr-1 transition-colors flex items-center gap-1"
+            title="Clear search [Esc]"
           >
             <X className="w-4 h-4" />
           </button>
+        ) : (
+          <kbd className="hidden sm:inline-block font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-400 border border-slate-200 mr-1.5 select-none" title="Press [/] to search">
+            /
+          </kbd>
         )}
 
         <div className="h-5 w-px bg-slate-200 mx-1.5 shrink-0" />

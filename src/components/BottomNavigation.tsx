@@ -17,22 +17,26 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
     {
       id: 'map' as NavTab,
       label: 'Map View',
+      shortcut: '1',
       icon: Map,
     },
     {
       id: 'list' as NavTab,
       label: 'Nearby Lots',
+      shortcut: '2',
       icon: List,
     },
     {
       id: 'saved' as NavTab,
       label: 'Saved Lots',
+      shortcut: '3',
       icon: Bookmark,
       badge: savedCount > 0 ? savedCount : undefined,
     },
     {
       id: 'info' as NavTab,
-      label: 'SG Rates Guide',
+      label: 'Rates Guide',
+      shortcut: '4',
       icon: HelpCircle,
     },
   ];
@@ -68,8 +72,11 @@ export const BottomNavigation: React.FC<BottomNavigationProps> = ({
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-1 tracking-tight leading-none">
-                {tab.label}
+              <span className="text-[11px] mt-1 tracking-tight leading-none flex items-center gap-1">
+                <span>{tab.label}</span>
+                <span className="hidden sm:inline-block text-[9px] font-mono px-1 py-0.2 rounded bg-slate-100 text-slate-500 border border-slate-200">
+                  {tab.shortcut}
+                </span>
               </span>
               {isActive && (
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1 absolute -bottom-0.5" />
