@@ -166,10 +166,37 @@ export const RatesGuideView: React.FC = () => {
               </a>
             </div>
             <code className="text-[11px] text-emerald-300 bg-slate-950 px-2 py-1 rounded block mt-1 overflow-x-auto">
-              GET http://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2
+              GET https://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2
             </code>
             <p className="text-[11px] text-slate-400 mt-1">
-              Headers: <span className="text-amber-300">AccountKey: YOUR_API_KEY</span>. Includes commercial malls, Suntec, MBS, and Changi Airport lots.
+              Headers: <span className="text-amber-300">AccountKey: &lt;LTA_ACCOUNT_KEY&gt;</span>. (Note: No total lots in this feed).
+            </p>
+          </div>
+
+          {/* Local Serverless Endpoints (/api/health & /api/carpark-availability) */}
+          <div className="p-3 rounded-xl bg-slate-800/80 border border-blue-500/40">
+            <div className="flex items-center justify-between font-semibold text-blue-300 mb-1">
+              <span>3. Local Serverless Routes (Project Root `/api`)</span>
+              <span className="text-[10px] px-2 py-0.5 rounded bg-blue-900/60 text-blue-200 border border-blue-700">
+                Active
+              </span>
+            </div>
+            <div className="space-y-1.5 mt-2">
+              <div>
+                <span className="text-[11px] text-slate-300 font-medium">Health Check:</span>
+                <code className="text-[11px] text-blue-300 bg-slate-950 px-2 py-0.5 rounded block mt-0.5">
+                  GET /api/health
+                </code>
+              </div>
+              <div>
+                <span className="text-[11px] text-slate-300 font-medium">LTA Carpark Lots (Feed):</span>
+                <code className="text-[11px] text-blue-300 bg-slate-950 px-2 py-0.5 rounded block mt-0.5">
+                  GET /api/carpark-availability
+                </code>
+              </div>
+            </div>
+            <p className="text-[11px] text-slate-400 mt-2">
+              These routes read <code className="text-amber-300">LTA_ACCOUNT_KEY</code> from your environment, forwards the required <code className="text-amber-300">AccountKey</code> header to LTA DataMall, and normalizes coordinates and vacancies.
             </p>
           </div>
         </div>

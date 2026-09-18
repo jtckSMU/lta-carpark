@@ -147,6 +147,101 @@ class CarparkService {
   }
 
   /**
+   * Check Serverless API Health Status
+   * Endpoint: /api/health
+   */
+  public async checkServerlessHealth(): Promise<{
+    ok: boolean;
+    status?: string;
+    ltaConfigured?: boolean;
+    message?: string;
+  }> {
+    try {
+      const res = await fetch('/api/health');
+      if (!res.ok) return { ok: false, message: `Status ${res.status}` };
+      const json = await res.json();
+      return {
+        ok: true,
+        status: json.status,
+        ltaConfigured: Boolean(json.ltaDataMall?.accountKeyConfigured),
+        message: json.ltaDataMall?.message,
+      };
+    } catch (e: any) {
+      return { ok: false, message: e?.message || 'Failed to reach /api/health' };
+    }
+  }
+
+  /**
+   * Fetch Live Lots from Serverless LTA DataMall Endpoint
+   * Endpoint: /api/carpark-availability
+   * Endpoint feed: https://datamall2.mytransport.sg/ltaodataservice/CarParkAvailabilityv2
+   * Note: No total lots in this feed (available lots only)
+   */
+  public async fetchFromLtaDataMall(): Promise<{
+    success: boolean;
+    configured: boolean;
+    count?: number;
+    message?: string;
+  }> {
+    try {
+      const res = await fetch('/api/carpark-availability');
+      const json = await res.json();
+
+      if (!json.configured) {
+        return {
+          success: false,
+          configured: false,
+          message: json.message || 'LTA_ACCOUNT_KEY not configured',
+        };
+      }
+
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        const liveMap = new Map<string, any>();
+        json.data.forEach((item: any) => {
+          if (item.carparkNumber) {
+            liveMap.set(item.carparkNumber.toUpperCase(), item);
+          }
+        });
+
+        // Update carparks with real-time lots from LTA feed
+        let matchedCount = 0;
+        this.carparks = this.carparks.map((cp) => {
+          const live = liveMap.get(cp.carpark_number.toUpperCase());
+          if (live) {
+            matchedCount++;
+            return {
+              ...cp,
+              lots_available: live.availableLots,
+              updated_at: 'Live LTA DataMall',
+            };
+          }
+          return cp;
+        });
+
+        this.lastUpdated = new Date();
+        return {
+          success: true,
+          configured: true,
+          count: json.data.length,
+          message: `Received ${json.data.length} lots from LTA DataMall (${matchedCount} matched local spots)`,
+        };
+      }
+
+      return {
+        success: false,
+        configured: true,
+        message: json.error || 'No records returned from LTA DataMall',
+      };
+    } catch (e: any) {
+      return {
+        success: false,
+        configured: true,
+        message: e?.message || 'Failed to connect to /api/carpark-availability',
+      };
+    }
+  }
+
+  /**
    * =========================================================================
    * SG GOV API ADAPTER HOOK (For user's future live API plug-in)
    * =========================================================================
